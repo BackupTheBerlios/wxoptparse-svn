@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<wxOptParse>
+  <option lastval="One" name="choice">
+    <recent value="Two" />
+    <recent value="Three" />
+    </option>
+  <option lastval="3.1415" name="float">
+    <recent value="2.718" />
+    <recent value="3.11" />
+    </option>
+  <option lastval="2" name="number">
+    <recent value="1" />
+    <recent value="3" />
+    </option>
+  <option lastval="No Help" name="filename2">
+    <recent value="Some Help" />
+    <recent value="Older" />
+    </option>
+  <option lastval="Bob" name="filename">
+    <recent value="Rob" />
+    <recent value="Older" />
+    </option>
+  <option lastval="False" name="bBool2">
+    <recent value="True" />
+    </option>
+  <option lastval=".." name="path">
+    <recent value="/home" />
+    <recent value="Older" />
+    </option>
+  <option lastval="False" name="bBool">
+    <recent value="True" />
+  </option>
+</wxOptParse>

@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<wxOptParse app="grepTest.py">
+  <option lastval="None" name="nAfterContext">
+  </option>
+  <option lastval="False" name="bText">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="nBeforeContext">
+  </option>
+  <option lastval="None" name="context">
+    <recent value="" />
+    </option>
+  <option lastval="None" name="byte_offset">
+    <recent value="" />
+    </option>
+  <option lastval="None" name="strBinaryFiles">
+    <recent value="" />
+    </option>
+  <option lastval="auto" name="colour">
+  </option>
+  <option lastval="False" name="bCount">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="strDevices">
+    <recent value="" />
+    </option>
+  <option lastval="None" name="strDirectories">
+    <recent value="" />
+    </option>
+  <option lastval="False" name="bExtendedRegexp">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="strRegexp">
+    <recent value="" />
+    </option>
+  <option lastval="False" name="bFixedStrings">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bPerlRegexp">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="strFile">
+    <recent value="" />
+    </option>
+  <option lastval="False" name="bBasicRegexp">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bWithFilename">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bNoFilename">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bHelp">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bI">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bIgnoreCase">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bFilesWithoutMatch">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bFilesWithMatches">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="nMaxCount">
+  </option>
+  <option lastval="False" name="bMmap">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bLineNumber">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bOnlyMatching">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="strLabel">
+    <recent value="" />
+    </option>
+  <option lastval="False" name="bLineBuffering">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bQuiet">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bRecursive">
+    <recent value="None" />
+    </option>
+  <option lastval="None" name="strInclude">
+    <recent value="" />
+    </option>
+  <option lastval="None" name="strExclude">
+    <recent value="" />
+    </option>
+  <option lastval="False" name="bNoMessages">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bBinary">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bUnixByteOffsets">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bVersion">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bInvertMatch">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bWordRegexp">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bLineRegexp">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bY">
+    <recent value="None" />
+    </option>
+  <option lastval="False" name="bNull">
+    <recent value="None" />
+    </option>
+</wxOptParse>
