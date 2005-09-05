@@ -107,40 +107,36 @@ class MainWindow(wx.Frame):
         text.SetSize(text.GetBestSize())
         aVBox.Add(text, flag=wx.ALL, border = 5)
 
-        for option in self.options:
-            strHelp = option.help
-            if not strHelp and option._long_opts:
-                strHelp = option._long_opts[0]
-            if not strHelp and option._short_opts:
-                strHelp = option._short_opts[0]
+        for myOption in IterOptions(self):
+            strHelp = myOption.getHelp()
                 
-            if option.action == 'help' or option.action == 'version':
+            if myOption.toSkip():
                 pass # skip these
-            elif option.choices:
-                choices = [''] + list(option.choices)
+            elif myOption.isChoice():
+                choices = [''] + list(myOption.getChoices())
                 cbox = wx.ComboBox(self.panel, -1, choices = choices, style = wx.CB_READONLY | wx.CB_DROPDOWN)
-                self._addCtrl(aVBox, cbox, option, wx.EVT_COMBOBOX, self.OnComboChanged, strHelp)
-            elif option.action == 'store_true' or option.action == 'store_false':
+                self._addCtrl(aVBox, cbox, myOption, wx.EVT_COMBOBOX, self.OnComboChanged, strHelp)
+            elif myOption.isBoolean():
                 listHelp = textwrap.wrap(strHelp)
                 checkb = wx.CheckBox(self.panel, -1, listHelp[0], size=(600, 20))
-                self._addCtrl(aVBox, checkb, option, wx.EVT_CHECKBOX, self.OnCheckClicked)
+                self._addCtrl(aVBox, checkb, myOption, wx.EVT_CHECKBOX, self.OnCheckClicked)
                 if len(listHelp) > 1:
                     aVBox.Add(wx.StaticText(self.panel, -1, '\n'.join(listHelp[1:])), flag = wx.LEFT, border = 20)
-            elif option.getType() == 'int':
+            elif myOption.getType() == 'int':
                 min = wx.lib.intctrl.IntCtrl(self.panel, size=( 50, -1 ) )
                 min.SetNoneAllowed(True)
                 min.SetValue(None)
-                self._addCtrl(aVBox, min, option, wx.lib.intctrl.EVT_INT, self.OnIntChanged, strHelp)
-            elif option.type == 'float':
+                self._addCtrl(aVBox, min, myOption, wx.lib.intctrl.EVT_INT, self.OnIntChanged, strHelp)
+            elif myOption.getType() == 'float':
                 textctrl = wx.TextCtrl(self.panel, -1, size=(50, -1))
-                self._addCtrl(aVBox, textctrl, option, wx.EVT_TEXT, self.OnTextChange, strHelp)
-            elif self._guessFile(option):
-                self._addFileBox(aVBox, option)
-            elif self._guessPath(option):
-                self._addPathBox(aVBox, option)
+                self._addCtrl(aVBox, textctrl, myOption, wx.EVT_TEXT, self.OnTextChange, strHelp)
+            elif self._guessFile(myOption):
+                self._addFileBox(aVBox, myOption)
+            elif self._guessPath(myOption):
+                self._addPathBox(aVBox, myOption)
             else:
                 textctrl = wx.TextCtrl(self.panel, -1, size=(-1, -1))
-                self._addCtrl(aVBox, textctrl, option, wx.EVT_TEXT, self.OnTextChange, strHelp)
+                self._addCtrl(aVBox, textctrl, myOption, wx.EVT_TEXT, self.OnTextChange, strHelp)
 
         self.ctrlArgs = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
         aVBox.Add(wx.StaticText(self.panel, -1, "Additional arguments:"), 0, flag=wx.LEFT | wx.TOP, border = 5)
@@ -166,18 +162,17 @@ class MainWindow(wx.Frame):
         maxH = wx.SystemSettings_GetMetric(wx.SYS_SCREEN_Y)
         self.panel.SetScrollbars(20, 20, w/20, h/20)
         if w <= maxW and h <= maxH:
-            print "Fit"
             self.Fit()        
         self.Show(True)
 
     def _guessFile(self, option):
-        strSearch = option.help
+        strSearch = option.getHelp()
         if not strSearch:
             return False
         return 'file' in strSearch.lower()
     
     def _guessPath(self, option):
-        strSearch = option.help
+        strSearch = option.getHelp()
         if not strSearch:
             return False
         return 'path' in strSearch.lower() or 'folder' in strSearch.lower()
@@ -214,12 +209,7 @@ class MainWindow(wx.Frame):
         if text:
             aVBox.Add(wx.StaticText(self.panel, -1, textwrap.fill(text), size=(600, -1)), 0, flag=wx.LEFT | wx.TOP, border = 5)
         
-        strDefault = option.default
-        if self.findValue(option.dest) != None:
-            strDefault = self.findValue(option.dest)
-        
-        if str(strDefault) == str(optparse.NO_DEFAULT):
-            strDefault = None
+        strDefault = option.getDefault()
             
         if strDefault != None:
             if isinstance(ctrl, wx.lib.intctrl.IntCtrl):
@@ -236,7 +226,7 @@ class MainWindow(wx.Frame):
                     strDefault = None
                 if strDefault == None:
                     ctrl.SetValue(False)
-                elif option.action == 'store_false':
+                elif option.getAction() == 'store_false':
                     ctrl.SetValue(not strDefault)
                 else:
                     ctrl.SetValue(strDefault)
@@ -247,7 +237,7 @@ class MainWindow(wx.Frame):
                 ctrl.SetValue(str(strDefault))
         
         aVBox.Add(ctrl, 0, flag = wx.EXPAND | wx.ALL, border = 5)
-        self.ctrlOptions.append((ctrl, option))
+        self.ctrlOptions.append((ctrl, option.option))
         ctrl.Bind(eventId, function)
 
     def OnGo(self, evnt):
@@ -333,33 +323,33 @@ class MainWindow(wx.Frame):
 
     def _buildParams(self, useQuotes = False):
         strTextList = []
-        for ctrl, option in self.ctrlOptions:
+        for myOption in IterOptions(self):
             
-            strValue = ctrl.GetValue()
-            if strValue == None:
+            strValue = myOption.getValue()
+            if strValue == 'None':
                 strValue = ''
                 
-            if option.choices:
+            if myOption.isChoice():
                 if strValue != None and len(strValue) > 0:
-                    strTextList.append(option.get_opt_string())
+                    strTextList.append(myOption.getOptString())
                     if useQuotes and ' ' in strValue:
                         strValue = '"%s"' % (strValue)
                     
                     strTextList.append(strValue)
-            elif option.action == 'store_true' or option.action == 'store_false':
-                if (option.action == 'store_true' and ctrl.IsChecked() == True) or (option.action == 'store_false' and ctrl.IsChecked() == False):
-                    strTextList.append(option.get_opt_string()) # FIX to check, why opt_string()?
+            elif myOption.isBoolean():
+                if myOption.getBooleanStringValue() == "True":
+                    strTextList.append(myOption.getOptString()) # FIX to check, why opt_string()?
             else:
-                if option.type == 'int':
+                if myOption.getType() == 'int':
                     strValue = str(strValue)
-                elif option.type == 'float':
+                elif myOption.getType() == 'float':
                     try:
                         strValue = str(float(strValue))
                     except ValueError:
                         strValue = ''
                     
                 if len(strValue) > 0:
-                    strTextList.append(option.get_opt_string())
+                    strTextList.append(myOption.getOptString())
                     if useQuotes and ' ' in strValue:
                         strValue = '"%s"' % (strValue)
                     
@@ -393,41 +383,24 @@ class MainWindow(wx.Frame):
             return
         
         of = file(strFilename, "w")
-        of.write('<wxOptParse>\n')
-        for ctrl, option in self.ctrlOptions:
-            of.write('  <option name="%s"' % (option.dest))
+        of.write('<wxOptParse app="%s">\n' % (self.progname))
+        for myOption in IterOptions(self):
+            of.write('  <option name="%s"' % (myOption.getName()))
+            strValue = myOption.getValue()
             
-            strValue = ctrl.GetValue()
-            if strValue == None  or str(strValue) == str(optparse.NO_DEFAULT):
-                strValue = 'None'
-                
-            if option.choices or option.type == 'int' or option.type == 'float':
-                of.write(' lastval="%s">\n' % strValue)
-            elif option.action == 'store_true' or option.action == 'store_false':
-                if (option.action == "store_true" and strValue == True) or (option.action == "store_false" and strValue == False):
-                    of.write(' lastval="True">\n')
-                elif strValue != 'None':
-                    of.write(' lastval="False">\n')
-                else:
-                    of.write(' lastval="None">\n')
+            if myOption.isChoice() or myOption.isNumber():
+                of.write(' lastval="%s">\n' % (strValue,))
+            elif myOption.isBoolean():
+                of.write(' lastval="%s">\n' % (myOption.getBooleanStringValue(),))
             else:
-                of.write(' lastval="%s">\n' % strValue)
+                of.write(' lastval="%s">\n' % (strValue,))
             
             of.write('  </option>\n')
 
         of.write('</wxOptParse>\n')
+        
         of.close()
 
-    def findValue(self, strName):
-        if self.et == None:
-            return None
-            
-        for item in self.et.findall('//option'):
-            if item.attrib['name'] == strName:
-                return item.attrib['lastval']
-
-        return None
-        
     def updateElementTree(self):
         for ctrl, option in self.ctrlOptions:
             strName = option.dest
@@ -492,6 +465,7 @@ class IterOptions:
         else:
             self.list = self.parent.options
         
+        self.nIndex = 0
         
     def __iter__(self):
         return self
@@ -608,18 +582,15 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and len(sys.argv[1]) > 0:
         strFilename = sys.argv[1]
     else:
-        #~ strFilename = "tests/mytest.py"
+        strFilename = "tests/mytest.py"
         #~ strFilename = "tests/noDefaultsTest.py"
-        strFilename = "tests/grepTest.py"
-        strFilename = "tests/rsync.py"
+        #~ strFilename = "tests/grepTest.py"
         
     strDir = os.path.dirname(strFilename)
-    print 'Dir: "%s", file "%s"' % (strDir, os.path.basename(strFilename))
     os.chdir(strDir)
     
     sys.argv[0] = os.path.basename(strFilename) # Let's cheat
     if sys.argv[0] == strFilename and len(strDir) > 0:
         sys.argv[0] = sys.argv[0][len(strDir):]
-    
 
     execfile(sys.argv[0])
