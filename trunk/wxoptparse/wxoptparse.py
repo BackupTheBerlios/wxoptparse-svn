@@ -579,12 +579,16 @@ class MyOption:
 optparse.OptionParser = wxOptParser
 
 if __name__ == "__main__":
+    import sys
+    
     if len(sys.argv) > 1 and len(sys.argv[1]) > 0:
         strFilename = sys.argv[1]
     else:
-        strFilename = "tests/mytest.py"
+        print "usage: wxoptparse.py <programtorun>"
+        #~ strFilename = "tests/mytest.py"
         #~ strFilename = "tests/noDefaultsTest.py"
-        #~ strFilename = "tests/grepTest.py"
+        #strFilename = "tests/grepTest.py"
+        sys.exit(-1)
         
     strDir = os.path.dirname(strFilename)
     os.chdir(strDir)
