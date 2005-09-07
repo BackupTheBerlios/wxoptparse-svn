@@ -16,12 +16,13 @@
     <recent value="Some Help" />
     <recent value="Older" />
     </option>
-  <option lastval="Bob" name="filename">
+  <option lastval="fred" name="filename">
+    <recent value="Bob" />
     <recent value="Rob" />
     <recent value="Older" />
     </option>
-  <option lastval="False" name="bBool2">
-    <recent value="True" />
+  <option lastval="True" name="bBool2">
+    <recent value="False" />
     </option>
   <option lastval=".." name="path">
     <recent value="/home" />
