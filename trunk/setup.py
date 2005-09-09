@@ -28,7 +28,7 @@ edit boxes, combo boxes, etc. instead of using the command line.
     url="http://wxoptparse.berlios.de/",
     download_url='http://developer.berlios.de/project/showfiles.php?group_id=2209&release_id=3368',
     packages=find_packages(exclude='tests'),
-    scripts=["runWx"],
+    scripts=["scripts/runWx"],
     keywords=['wxOptParse', 'optparse', 'python', 'wxPython'],
     license='GNU GPL',
     zip_safe=True,

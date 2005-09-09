@@ -1,6 +1,6 @@
 include setup.py
 include ez_setup.py
-include runWx
+include scripts/runWx
 include wxoptparse/runWx
 include README.txt
 include docs/*.css

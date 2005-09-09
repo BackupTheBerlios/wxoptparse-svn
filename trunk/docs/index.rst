@@ -1,7 +1,5 @@
-﻿
-=============
-wxOptParse
-=============
+﻿wxOptParse
+~~~~~~~~~~~
 
 ''Don't limit yourself to the command line.''
 
@@ -120,6 +118,15 @@ To Do
 
 Related Links
 ================
+
+* This project's homepage http://developer.berlios.de/projects/wxoptparse/
+
+* The Wiki is at http://openfacts.berlios.de/index-en.phtml?title=wxOptParse
+
+* You can access via Subversion with: ::
+
+    svn checkout svn://svn.berlios.de/wxoptparse/trunk
+
 
 * ``configparse``: an optparse extension module for configuration file parsing. http://www.gustaebel.de/lars/configparse/
 
