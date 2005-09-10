@@ -591,7 +591,11 @@ if __name__ == "__main__":
         sys.exit(-1)
         
     strDir = os.path.dirname(strFilename)
-    os.chdir(strDir)
+    if len(strDir) > 0:
+        try:
+            os.chdir(strDir)
+        except Exception, e:
+            print "Unable to change to folder '%s'" % (strDir)
     
     sys.argv[0] = os.path.basename(strFilename) # Let's cheat
     if sys.argv[0] == strFilename and len(strDir) > 0:
