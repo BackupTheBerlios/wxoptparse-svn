@@ -578,7 +578,7 @@ class MyOption:
 
 optparse.OptionParser = wxOptParser
 
-if __name__ == "__main__":
+def handleCommandLine():
     import sys
     
     if len(sys.argv) > 1 and len(sys.argv[1]) > 0:
@@ -602,3 +602,6 @@ if __name__ == "__main__":
         sys.argv[0] = sys.argv[0][len(strDir):]
 
     execfile(sys.argv[0])
+
+if __name__ == "__main__":
+    handleCommandLine()
