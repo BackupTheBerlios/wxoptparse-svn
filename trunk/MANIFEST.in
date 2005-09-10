@@ -1,7 +1,5 @@
 include setup.py
 include ez_setup.py
-include scripts/runWx
-include wxoptparse/runWx
 include README.txt
 include docs/*.css
 include docs/*.rst
@@ -9,3 +7,4 @@ include docs/*.gif
 include docs/*.html
 include docs/*.png
 include wxoptparse/*.py
+include scripts/wxoptparse

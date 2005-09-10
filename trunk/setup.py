@@ -28,7 +28,7 @@ edit boxes, combo boxes, etc. instead of using the command line.
     url="http://wxoptparse.berlios.de/",
     download_url='http://developer.berlios.de/project/showfiles.php?group_id=2209&release_id=3368',
     packages=find_packages(exclude='tests'),
-    scripts=["scripts/runWx"],
+    scripts=["scripts/wxoptparse"],
     keywords=['wxOptParse', 'optparse', 'python', 'wxPython'],
     license='GNU GPL',
     zip_safe=True,
@@ -45,6 +45,9 @@ edit boxes, combo boxes, etc. instead of using the command line.
         'Operating System :: POSIX',
         'Programming Language :: Python',
     ],
-#    package_data={'': '*.xml'},
-#    install_requires=['wxPython>=2.5.3'], # Doesn't work on my machine
+    #    package_data={'': '*.xml'},
+    install_requires=[
+        #'elementtree>=1.2', # Also doesn't work
+        #'wxPython>=2.5.3'# Doesn't work on my machine,
+    ], 
     )

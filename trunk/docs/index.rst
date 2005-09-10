@@ -66,9 +66,11 @@ Features
 Dependencies
 ============
 
-* wxPython 2.5.3 or greater.
+* wxPython 2.5.3 or greater. (http://www.wxpython.org)
 
-* Python 2.4 (untested in 2.3).
+* elementtree 1.2 or greater (http://effbot.org/zone/element-index.htm)
+
+* Python 2.4 (untested in 2.3). (http://www.python.org)
 
 
 Installing
@@ -81,21 +83,18 @@ Egg
 
     easy_install.py wxoptparse
 
-
-Linux
------
-
-::
-
-    tar xvzf wxoptparse*.tar.gz
-    cd wxoptparse*
-    sudo python setup.py install
-
+You may need to run as root.
 
 
 Running
 =======
 
+If you want to run your program you should be able to:
+
+$ wxoptparse myprogram.py
+
+
+Assuming your program is called ``myprogram.py``
 
 To Do
 =====
@@ -108,13 +107,13 @@ To Do
 
 * Ability to reset the options to the defaults.
 
-* Have wxOptParse eat it's own dog food (if possible).
+* Have wxOptParse eat it's own dog food, by using optparse itself.
 
 * Ability to save a set of settings and give it a name.
 
 * Skin the dialog box.
 
-* Run the ouput in a sub window (I tried but wasn't able to do it).
+* Run the ouput in a sub-window (I tried but wasn't able to do it).
 
 Related Links
 ================
