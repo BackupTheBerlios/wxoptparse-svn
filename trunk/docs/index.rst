@@ -13,10 +13,10 @@ Introduction
 ============
 
 |wxoptparse| is a Python program that brings up a graphical representation of 
-the options that another python program has for the command line, via the optparse
+the options that another python program has for the command line, via the optparse_
 module.
 
-What this means is that if if you have a program that uses optparse you can 
+What this means is that if if you have a program that uses optparse_ you can 
 click on checkboxes, edit boxes, combo boxes, etc. instead of using the command line.
 
 So instead of this::
@@ -75,23 +75,47 @@ Dependencies
 
 Installing
 ==========
+Choose one of the following methods.  In all cases you probably need to run as root.
 
-Egg
----
+
+
+Egg Download
+------------
 
 ::
 
     easy_install.py wxoptparse
 
-You may need to run as root.
+Egg File
+---------
 
+::
+
+    easy_install.py wxOptParse-0.1.2-py2.4.egg
+    
+Easy Install Zip
+----------------
+::
+
+    easy_install.py wxOptParse-0.1.2.zip
+
+Normal Python Install
+----------------------
+::
+
+    unzip wxOptParse-0.1.2.zip
+    cd wxOptParse-0.1.2
+    python setup.py install
+    
+    
 
 Running
 =======
 
-If you want to run your program you should be able to:
+If you want to run your program you should be able to type:
 
 $ wxoptparse myprogram.py
+
 
 
 Assuming your program is called ``myprogram.py``
@@ -103,15 +127,21 @@ To Do
 
 * Be able to pass some parameters via the command line.
 
+* Allow you to change `your` program so that it uses, optionally, |wxOptParse|.
+
 * A method to force an option's items type (like whether it is to browse for file/folder)
 
 * Be able to change these items through a GUI interface.
 
 * Ability to reset the options to the defaults.
 
-* Have wxOptParse eat it's own dog food, by using optparse itself.
+* Have |wxOptParse| eat it's own dog food, by using optparse itself.
 
 * Ability to save a set of settings and give it a name.
+
+* Use radio buttons when appropriate.
+
+* Use tooltips
 
 * Skin the dialog box.
 
@@ -139,13 +169,16 @@ Related Links
 Changelog
 =========
 
-- Release 0.0.1 - Sept 6th, 2005
+- Release 0.0.1 - Sept 11th, 2005
 
 Initial working release.
-
 
 .. _Subversion: http://subversion.tigris.org/
 
 .. |wxoptparse| replace:: ``wxOptParse``
 
+.. |wxOptParse| replace:: ``wxOptParse``
+
 .. |Not supported| replace:: **- Not supported**
+
+.. _optparse: http://www.python.org/doc/2.4/lib/module-optparse.html
