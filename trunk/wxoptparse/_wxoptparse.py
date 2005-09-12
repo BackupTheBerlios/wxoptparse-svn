@@ -577,6 +577,7 @@ class MyOption:
         return "%s:%s" % (self.getName(), self.getDefault())
 
 optparse.OptionParser = wxOptParser
+OptionParser = wxOptParser
 
 def handleCommandLine():
     import sys

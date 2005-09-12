@@ -101,7 +101,9 @@ To Do
 
 * A way to *use* your recent items (combo box).
 
-* A method to force an option's type (like whether it is to browse for file/folder)
+* Be able to pass some parameters via the command line.
+
+* A method to force an option's items type (like whether it is to browse for file/folder)
 
 * Be able to change these items through a GUI interface.
 
