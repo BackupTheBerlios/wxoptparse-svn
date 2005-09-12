@@ -17,13 +17,13 @@ setup(name="wxOptParse",
     version="0.1.2",
     description="wxOptParse: run the command line options from a dialog box.",
     long_description="""\
-wxOptParse is a Python program that brings up a graphical representation of the options 
+``wxOptParse`` is a Python program that brings up a graphical representation of the options 
 that another python program has for the command line, via the optparse module.
 
-What this means is that if if you have a program that uses optparse you can click on checkboxes, 
-edit boxes, combo boxes, etc. instead of using the command line.
-
-``Fixed link``
+What this means is that if if you have a Python program that uses ``optparse``, 
+which is a standard python
+module used to parse the command line, you can click on checkboxes, 
+edit boxes, combo boxes, etc. instead of passing this information on the command line.
 """,
     author="Scott Kirkwood",
     author_email="scottakirkwood@gmail.com",
@@ -48,8 +48,8 @@ edit boxes, combo boxes, etc. instead of using the command line.
         'Programming Language :: Python',
     ],
     #    package_data={'': '*.xml'},
-    install_requires=[
+    install_requires=(
         #'elementtree>=1.2', # Also doesn't work
         #'wxPython>=2.5.3'# Doesn't work on my machine,
-    ], 
+    ), 
     )
