@@ -73,6 +73,11 @@ Dependencies
 * Python 2.4 (untested in 2.3). (http://www.python.org)
 
 
+Download
+========
+
+http://developer.berlios.de/project/showfiles.php?group_id=4589
+
 Installing
 ==========
 Choose one of the following methods.  In all cases you probably need to run as root.

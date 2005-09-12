@@ -22,11 +22,13 @@ that another python program has for the command line, via the optparse module.
 
 What this means is that if if you have a program that uses optparse you can click on checkboxes, 
 edit boxes, combo boxes, etc. instead of using the command line.
+
+``Fixed link``
 """,
     author="Scott Kirkwood",
     author_email="scottakirkwood@gmail.com",
     url="http://wxoptparse.berlios.de/",
-    download_url='http://developer.berlios.de/project/showfiles.php?group_id=2209&release_id=3368',
+    download_url='http://download.berlios.de/wxoptparse/wxOptParse-0.1.2.zip',
     packages=find_packages(exclude='tests'),
     scripts=["scripts/wxoptparse"],
     keywords=['wxOptParse', 'optparse', 'python', 'wxPython'],
