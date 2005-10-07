@@ -62,6 +62,9 @@ Features
 
 * A history of your previous items are stored.
 
+* There's a sample of how you can run any program through wxOptParse, not 
+  just a python program.  See wxFind.
+
 
 Dependencies
 ============
@@ -80,6 +83,7 @@ http://developer.berlios.de/project/showfiles.php?group_id=4589
 
 Installing
 ==========
+
 Choose one of the following methods.  In all cases you probably need to run as root.
 
 
@@ -96,22 +100,21 @@ Egg File
 
 ::
 
-    easy_install.py wxOptParse-0.1.2-py2.4.egg
+    easy_install.py wxOptParse-0.1.4-py2.4.egg
     
 Easy Install Zip
 ----------------
 ::
 
-    easy_install.py wxOptParse-0.1.2.zip
+    easy_install.py wxOptParse-0.1.4.zip
 
 Normal Python Install
 ----------------------
 ::
 
-    unzip wxOptParse-0.1.2.zip
-    cd wxOptParse-0.1.2
+    unzip wxOptParse-0.1.4.zip
+    cd wxOptParse-0.1.4
     python setup.py install
-    
     
 
 Running
@@ -121,9 +124,11 @@ If you want to run your program you should be able to type:
 
 $ wxoptparse myprogram.py
 
-
-
 Assuming your program is called ``myprogram.py``
+
+There's a sample program installed called wxFind which runs the 
+GNU find command, if available.  The source code shows you how it is done.
+
 
 To Do
 =====

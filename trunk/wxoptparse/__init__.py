@@ -49,7 +49,8 @@ class wxOptParser(optparse.OptionParser):
         self.rargs = rargs
         self.largs = largs = []
         self.values = values
-
+        self.commandLineLst = [] # My little addition
+        
         try:
             stop = self._process_args(largs, rargs, values)
         except (BadOptionError, OptionValueError), err:
@@ -60,6 +61,7 @@ class wxOptParser(optparse.OptionParser):
 
         app = wx.PySimpleApp()
         frame = MainWindow(self, self.option_list)
+
         app.MainLoop()
         
         return app, frame
@@ -86,7 +88,7 @@ class MainWindow(wx.Frame):
         self.ctrlOptions = []
         id = -1
         
-        title = "wxOptParser"
+        title = "wxOptParse"
         
         wx.Frame.__init__(self, 
             None,
@@ -219,9 +221,9 @@ class MainWindow(wx.Frame):
                 except:
                     ctrl.SetValue(None)
             elif isinstance(ctrl, wx.CheckBox):
-                if strDefault == 'True':
+                if strDefault == 'True' or strDefault == True:
                     strDefault = True
-                elif strDefault == 'False':
+                elif strDefault == 'False' or strDefault == False:
                     strDefault = False
                 else:
                     strDefault = None
@@ -319,8 +321,8 @@ class MainWindow(wx.Frame):
         self.buildParams()
         
     def buildParams(self):
-        strTextList = self._buildParams(useQuotes = True)
-        self.ctrlParams.SetValue(' '.join(strTextList))
+        self.parent.commandLineLst = self._buildParams(useQuotes = True)[:]
+        self.ctrlParams.SetValue(' '.join(self.parent.commandLineLst))
 
     def _buildParams(self, useQuotes = False):
         strTextList = []
@@ -333,7 +335,7 @@ class MainWindow(wx.Frame):
             if myOption.isChoice():
                 if strValue != None and len(strValue) > 0:
                     strTextList.append(myOption.getOptString())
-                    if useQuotes and ' ' in strValue:
+                    if useQuotes and (' ' in strValue or '*' in strValue or '?' in strValue):
                         strValue = '"%s"' % (strValue)
                     
                     strTextList.append(strValue)
@@ -351,7 +353,7 @@ class MainWindow(wx.Frame):
                     
                 if len(strValue) > 0:
                     strTextList.append(myOption.getOptString())
-                    if useQuotes and ' ' in strValue:
+                    if useQuotes and (' ' in strValue or '*' in strValue or '?' in strValue):
                         strValue = '"%s"' % (strValue)
                     
                     strTextList.append(strValue)
@@ -577,6 +579,7 @@ class MyOption:
     def __str__(self):
         return "%s:%s" % (self.getName(), self.getDefault())
 
+g_orginalOptionParser = optparse.OptionParser
 optparse.OptionParser = wxOptParser
 OptionParser = wxOptParser
 
@@ -604,8 +607,10 @@ def handleCommandLine():
     sys.argv[0] = os.path.basename(strFilename) # Let's cheat
     if sys.argv[0] == strFilename and len(strDir) > 0:
         sys.argv[0] = sys.argv[0][len(strDir):]
+    strModuleName = sys.argv[0][:]
+    if strModuleName.endswith('.py'):
+        strModuleName = strModuleName[:-3]
 
-    strModuleName = sys.argv[0][:-3]
     __import__(strModuleName)
     execfile(sys.argv[0])
 
