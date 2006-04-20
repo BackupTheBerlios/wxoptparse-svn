@@ -56,18 +56,18 @@ Egg Download
 Egg File
 ---------
 
-    # easy_install.py wxOptParse-0.1.2-py2.4.egg
+    # easy_install.py wxOptParse-x.y.z-py2.4.egg
     
 Easy Install Zip
 ----------------
 
-    # easy_install.py wxOptParse-0.1.2.zip
+    # easy_install.py wxOptParse-x.y.z.zip
 
 Normal Python Install
 ----------------------
 
-    # unzip wxOptParse-0.1.2.zip
-    # cd wxOptParse-0.1.2
+    # unzip wxOptParse-x.y.z.zip
+    # cd wxOptParse-x.y.z
     # python setup.py install
     
 
@@ -78,4 +78,9 @@ If you want to run your program you should be able to type:
 
     $ wxoptparse myprogram.py
 
+
+Under Windows you may need to add "c:\Python2.4\scripts" to your path 
+(or whatever directory python is installed)
+in order to run wxoptparse.  
+The standard Python installer does not appear to do this for you.
 
