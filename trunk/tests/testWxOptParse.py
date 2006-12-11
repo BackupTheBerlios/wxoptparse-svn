@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import wxversion
-wxversion.select("2.5.3")
+#import wxversion
+#wxversion.select("2.5.3")
 import wxMock
 import unittest
 from elementtree import ElementTree

@@ -12,8 +12,9 @@ class Dummy(ModuleType):
 
   def _wxPySetDictionary(self,d):
       d['Platform'] = '__WXMSW__'
+      d['PlatformInfo'] = ['__WXMSW__']
       d['__wxPyPtrTypeMap'] = {}
-  
+
 _core_ = Dummy("dummy")
 _core_.cvar = Dummy("dummy")
 _gdi_ = Dummy("dummy")
@@ -31,6 +32,8 @@ sys.modules['wx._controls_'] = _controls_
 sys.modules['wx._misc_'] = _controls_
 sys.modules['wx._html'] = _controls_
 sys.modules['wx._grid'] = _controls_
+
+PlatformInfo=[]
 import wx
 import wx.html
 import wx.grid

@@ -19,7 +19,7 @@ from setuptools import setup, find_packages
 # setup.py develop
 
 setup(name="wxOptParse",
-    version="0.1.5",
+    version="0.1.6",
     description="wxOptParse: run the command line options from a dialog box.",
     long_description="""\
 ``wxOptParse`` is a Python program that brings up a graphical representation of the options 
@@ -35,7 +35,7 @@ edit boxes, combo boxes, etc. instead of passing this information on the command
     url="http://wxoptparse.berlios.de/",
     download_url='http://download.berlios.de/wxoptparse/wxOptParse-0.1.3.zip',
     packages=find_packages(exclude='tests'),
-    scripts=["scripts/wxoptparse.py", 'scripts/wxFind.py'],
+    scripts=["scripts/wxoptparse", 'scripts/wxFind'],
     keywords=['wxOptParse', 'optparse', 'python', 'wxPython'],
     license='GNU GPL',
     zip_safe=True,
@@ -54,7 +54,7 @@ edit boxes, combo boxes, etc. instead of passing this information on the command
     ],
     #    package_data={'': '*.xml'},
     install_requires=(
-        #'elementtree>=1.2', # Also doesn't work
-        #'wxPython>=2.5.3'# Doesn't work on my machine,
+        'elementtree >= 1.2',
+        #'wxPython'# Doesn't work on my machine,
     ), 
     )

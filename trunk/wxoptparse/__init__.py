@@ -4,8 +4,6 @@
 import optparse
 from optparse import OptionParser
 from elementtree import ElementTree
-import wxversion
-wxversion.select("2.5.3")
 
 import wx, wx.lib.intctrl
 import textwrap
@@ -13,7 +11,7 @@ import os,sys,re
 
 class SecondWindow(wx.Frame):
     """ Not used at the moment.
-    The idea is to have a graphical window where the output is send """
+    The idea is to have a graphical window where the output is sent """
     
     def __init__(self):
         self.orig = sys.stdout
@@ -71,7 +69,9 @@ class wxOptParser(optparse.OptionParser):
         if hasattr(self, '_wxOptParseCallback'):
             # This gives you a chance to change/test some stuff when the dialog is up
             self._wxOptParseCallback(self, app, frame)
-        
+
+        del frame
+        del app
         return (self.options, self.args)
         
 
@@ -97,11 +97,10 @@ class MainWindow(wx.Frame):
             size = (900,600),
             style = wx.DEFAULT_FRAME_STYLE)
             
-        #~ self.panel = wx.Panel(self, -1)
-        self.panel = wx.ScrolledWindow(self, -1, (0, 0))
+        self.panel = wx.ScrolledWindow(self, -1, (0, 0), style=wx.TAB_TRAVERSAL)
         
         self.loadSavedInfo()
-
+        
         aVBox = wx.BoxSizer(wx.VERTICAL)
         
         text = wx.StaticText(self.panel, -1, self.progname, style = wx.ALIGN_CENTRE)
@@ -146,11 +145,13 @@ class MainWindow(wx.Frame):
         aVBox.Add(self.ctrlArgs, 0, flag=wx.ALL | wx.EXPAND, border = 5)
         self.ctrlArgs.Bind(wx.EVT_TEXT, self.OnTextChange)
         
-        self.ctrlParams = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
+        #self.ctrlParams = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
+        self.ctrlParams = wx.TextCtrl(self.panel, -1, '', size=(-1,-1), style=wx.TE_READONLY)
         aVBox.Add(wx.StaticText(self.panel, -1, "Params:"), 0, flag=wx.LEFT | wx.TOP, border = 5)
         aVBox.Add(self.ctrlParams, 0, flag=wx.ALL | wx.EXPAND, border = 5)
         
-        self.ctrlGo = wx.Button(self.panel, -1, "Go")
+        self.ctrlGo = wx.Button(self.panel, wx.ID_OK, "Go")
+        self.ctrlGo.SetDefault()
         aVBox.Add(self.ctrlGo, flag = wx.ALL, border = 5)
         self.ctrlGo.Bind(wx.EVT_BUTTON, self.OnGo)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -247,7 +248,7 @@ class MainWindow(wx.Frame):
         self.params =  self._buildParams()
         values = self.parent.get_default_values()
         self.saveInfo()
-
+        
         self.parent.rargs = self.params[:]
         self.parent.largs = largs = []
         self.parent.values = values
@@ -261,6 +262,9 @@ class MainWindow(wx.Frame):
         (self.parent.options, self.parent.args) = self.parent.check_values(values, args)
 
         #print "Args:", self.params
+        self.Unbind(wx.EVT_CLOSE)
+        self.ctrlGo.Unbind(wx.EVT_BUTTON)
+        self.ctrlArgs.Unbind(wx.EVT_TEXT)
         self.Destroy()
         
     def OnTextChange(self, event):
@@ -357,9 +361,11 @@ class MainWindow(wx.Frame):
                         strValue = '"%s"' % (strValue)
                     
                     strTextList.append(strValue)
-    
-        if self.ctrlArgs.GetValue() != None:
-            strTextList += self.ctrlArgs.GetValue().split(' ')
+
+        # prevent empty additional argument(s) from being an empty string
+        ctrlArgsValue = self.ctrlArgs.GetValue()
+        if ctrlArgsValue is not None and ctrlArgsValue != '':
+             strTextList += self.ctrlArgs.GetValue().split(' ')
         
         return strTextList
 
@@ -370,16 +376,15 @@ class MainWindow(wx.Frame):
         
         if not os.path.isfile(strFilename):
             return 
-        
-        # Unfortunately we need to assume the file has the real information
-        # and that the 
+
+        print "Loading up %s" % (strFilename)
         self.et = ElementTree.parse(strFilename)
         
     def saveInfo(self):
         strFilename = self.getXmlFilename()
         if strFilename == None:
             return
-            
+        
         if self.et:
             self.updateElementTree()
             self.et.write(strFilename, encoding="iso-8859-1")
@@ -408,7 +413,8 @@ class MainWindow(wx.Frame):
         for ctrl, option in self.ctrlOptions:
             strName = option.dest
             if option.action == 'store_true' or option.action == 'store_false':
-                if (option.action == 'store_true' and ctrl.IsChecked() == True) or (option.action == 'store_false' and ctrl.IsChecked() == False):
+                if (option.action == 'store_true' and ctrl.IsChecked() == True) or \
+                    (option.action == 'store_false' and ctrl.IsChecked() == False):
                     strLastVal = 'True'
                 elif ctrl.GetValue() != None:
                     strLastVal = 'False'
@@ -449,6 +455,16 @@ class MainWindow(wx.Frame):
     def getXmlFilename(self):
         strFilename = self.progname
         strFilename = re.sub(r'\..{1,4}$', '.args', strFilename)
+        # "new/orig" diff line
+        #strFilename = '.' + strFilename # prepend a dot to hide in Unix
+        ## NEW START
+        strBaseFilename = os.path.dirname(strFilename)
+        strDirname = os.path.basename(strFilename)
+        strBaseFilename = '.' + strBaseFilename # prepend a dot to hide in Unix
+        strFilename = os.path.join(strFilename)
+        strFilename = os.path.normpath(strFilename)
+        ## NEW END
+        
         if strFilename == self.progname:
             # Don't overwrite the program
             return None
@@ -480,8 +496,12 @@ class IterOptions:
         raise StopIteration
 
 class MyOption:
-    """ Create a class so that all the times we have to iterate over the options we have a 
-    consistent set of rules about what type of object we are looking at, for example """
+    """ Option class handles elementtree and optparse.options
+    
+    Create a class so that all the times we have to iterate over the options 
+    we have a consistent set of rules about what type of object we are 
+    looking at, for example .
+    """
     
     def __init__(self, listItem, et):
         self.et = et
@@ -520,14 +540,22 @@ class MyOption:
         return self.option.action == 'store_true' or self.option.action == 'store_false'
 
     def getBooleanStringValue(self):
-        if (self.option.action == "store_true" and self.getValue() == True) or (self.option.action == "store_false" and self.getValue() == False):
+        if (self.option.action == "store_true" and self.getValue() == True) or \
+            (self.option.action == "store_false" and self.getValue() == False):
             return "True"
         elif self.getValue() != 'None':
             return "False"
         return "None"
 
     def getOptString(self):
-        return self.option.get_opt_string()
+        try:
+            return self.option.get_opt_string()
+        except:
+            # This should work with older versions of optparse
+            if self.option._long_opts:
+                return self.option._long_opts[0]
+            else:
+                return self.option._short_opts[0]
 
     def getAction(self):
         return self.option.action
@@ -561,9 +589,8 @@ class MyOption:
         
     def findItemAttrib(self, strName, strAttrib):
         item = self.findItem(strName)
-        if item and strAttrib in item.attrib:
+        if item != None and strAttrib in item.attrib:
             return item.attrib[strAttrib]
-        
         return None
 
     def findItem(self, strName):
@@ -597,11 +624,8 @@ def handleCommandLine():
         
     strDir = os.path.dirname(strFilename)
     if len(strDir) > 0:
-        try:
-            os.chdir(strDir)
-        except Exception, e:
-            print "Unable to change to folder '%s'" % (strDir)
-    
+        sys.path.append(os.path.abspath(strDir))
+    sys.path.append('.') 
     globals()['__name__'] = '__main__'
     
     sys.argv[0] = os.path.basename(strFilename) # Let's cheat
@@ -610,9 +634,9 @@ def handleCommandLine():
     strModuleName = sys.argv[0][:]
     if strModuleName.endswith('.py'):
         strModuleName = strModuleName[:-3]
-
-    __import__(strModuleName)
-    execfile(sys.argv[0])
+    module = __import__(strModuleName)
+    module.__dict__.update(globals())
+    execfile(strFilename, module.__dict__)
 
 if __name__ == "__main__":
     handleCommandLine()
