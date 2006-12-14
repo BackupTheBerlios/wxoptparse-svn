@@ -2,6 +2,7 @@ exclude *
 include setup.py
 include ez_setup.py
 include README.txt
+include CHANGELOG
 include docs/*.css
 include docs/*.rst
 include docs/*.gif
