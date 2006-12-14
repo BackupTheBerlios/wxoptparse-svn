@@ -33,7 +33,7 @@ edit boxes, combo boxes, etc. instead of passing this information on the command
     author="Scott Kirkwood",
     author_email="scottakirkwood@gmail.com",
     url="http://wxoptparse.berlios.de/",
-    download_url='http://download.berlios.de/wxoptparse/wxOptParse-0.1.3.zip',
+    download_url='http://download.berlios.de/wxoptparse/wxOptParse-0.1.6.zip',
     packages=find_packages(exclude='tests'),
     scripts=["scripts/wxoptparse", 'scripts/wxFind'],
     keywords=['wxOptParse', 'optparse', 'python', 'wxPython'],

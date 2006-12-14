@@ -62,6 +62,8 @@ Features
 
 * A history of your previous items are stored.
 
+* There's a sample of how you can run any program through wxOptParse, not just a python program. See wxFind.
+
 
 Dependencies
 ============
@@ -125,30 +127,25 @@ $ wxoptparse myprogram.py
 
 Assuming your program is called ``myprogram.py``
 
+There's a sample program installed called wxFind which runs the GNU find command, if available. The source code shows you how it is done. Unfortunately, GNU's find doesn't use the standard style of parameters so some handling of the parameters needs to be done, but it is still quite useful.
+
+
 To Do
 =====
 
-* A way to *use* your recent items (combo box).
-
-* Be able to pass some parameters via the command line.
+* A way to *use* your recent items (combo box) - currently it shows the lastvalue used.
 
 * Allow you to change `your` program so that it uses, optionally, |wxOptParse|.
 
 * A method to force an option's items type (like whether it is to browse for file/folder)
 
-* Be able to change these items through a GUI interface.
-
 * Ability to reset the options to the defaults.
-
-* Have |wxOptParse| eat it's own dog food, by using optparse itself.
 
 * Ability to save a set of settings and give it a name.
 
 * Use radio buttons when appropriate.
 
 * Use tooltips
-
-* Skin the dialog box.
 
 * Run the ouput in a sub-window (I tried but wasn't able to do it).
 
@@ -174,9 +171,25 @@ Related Links
 Changelog
 =========
 
-- Release 0.0.1 - Sept 11th, 2005
+* Release 0.1.6 - 2006-11-13
 
-Initial working release.
+  - Now correctly remembers last value
+  - Passing commands on the command line works
+  - Problems with wxpython versioning, removed.
+  - The extra arguments were't saved, now they are.
+  - The previous args are now saved with a dot to hide it in Linux
+  - Tests were added to the package
+  - Works if the .py file is in another directory
+  - Tabbing in the dialog works now
+  - The Go button is the default, Enter now works.
+
+* Release 0.1.4 - 2005-10-06
+
+  - Added sample running the find command. Added some fixes to the setup.
+
+* Release 0.0.1 - Sept 11th, 2005
+
+  - Initial working release.
 
 .. _Subversion: http://subversion.tigris.org/
 
