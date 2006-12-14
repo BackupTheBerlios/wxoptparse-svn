@@ -58,7 +58,8 @@ class wxOptParser(optparse.OptionParser):
         (self.options, self.args) = self.check_values(values, args)
 
         app = wx.PySimpleApp()
-        frame = MainWindow(self, self.option_list)
+        # Skip the first arg, it's the name of the python program
+        frame = MainWindow(self, self.option_list, self.options, self.args[1:])
 
         app.MainLoop()
         
@@ -78,8 +79,9 @@ class wxOptParser(optparse.OptionParser):
 class MainWindow(wx.Frame):
     """ We simply derive a new class of Frame. """
     
-    def __init__(self, parent, options):
+    def __init__(self, parent, options, parsed_options, parsed_args):
         self.et = None
+        self.parsed_options = parsed_options
         self.parent = parent # wxOptParser
         self.progname = sys.argv[0]
         self.bPipe = True
@@ -140,11 +142,24 @@ class MainWindow(wx.Frame):
                 textctrl = wx.TextCtrl(self.panel, -1, size=(-1, -1))
                 self._addCtrl(aVBox, textctrl, myOption, wx.EVT_TEXT, self.OnTextChange, strHelp)
 
-        self.ctrlArgs = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
+        self.ctrlExtraArgs = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
         aVBox.Add(wx.StaticText(self.panel, -1, "Additional arguments:"), 0, flag=wx.LEFT | wx.TOP, border = 5)
-        aVBox.Add(self.ctrlArgs, 0, flag=wx.ALL | wx.EXPAND, border = 5)
-        self.ctrlArgs.Bind(wx.EVT_TEXT, self.OnTextChange)
+        aVBox.Add(self.ctrlExtraArgs, 0, flag=wx.ALL | wx.EXPAND, border = 5)
         
+        if parsed_args != None and len(parsed_args) > 0:
+            self.ctrlExtraArgs.SetValue(' '.join(parsed_args))
+        else:
+            if self.et:
+                item = self.et.find('extra')
+                if item != None:
+                    strValue = item.attrib['lastval']
+                    if strValue != None and strValue != 'None':
+                        self.ctrlExtraArgs.SetValue(strValue)
+            
+        self.ctrlExtraArgs.Bind(wx.EVT_TEXT, self.OnTextChange)
+        
+        # Read-only for now, but would be nice to make read-write and allow 
+        # users to put values there as well.
         #self.ctrlParams = wx.TextCtrl(self.panel, -1, '', size=(-1,-1))
         self.ctrlParams = wx.TextCtrl(self.panel, -1, '', size=(-1,-1), style=wx.TE_READONLY)
         aVBox.Add(wx.StaticText(self.panel, -1, "Params:"), 0, flag=wx.LEFT | wx.TOP, border = 5)
@@ -264,7 +279,7 @@ class MainWindow(wx.Frame):
         #print "Args:", self.params
         self.Unbind(wx.EVT_CLOSE)
         self.ctrlGo.Unbind(wx.EVT_BUTTON)
-        self.ctrlArgs.Unbind(wx.EVT_TEXT)
+        self.ctrlExtraArgs.Unbind(wx.EVT_TEXT)
         self.Destroy()
         
     def OnTextChange(self, event):
@@ -362,10 +377,13 @@ class MainWindow(wx.Frame):
                     
                     strTextList.append(strValue)
 
-        # prevent empty additional argument(s) from being an empty string
-        ctrlArgsValue = self.ctrlArgs.GetValue()
-        if ctrlArgsValue is not None and ctrlArgsValue != '':
-             strTextList += self.ctrlArgs.GetValue().split(' ')
+        extraArgsValue = self.ctrlExtraArgs.GetValue()
+        if extraArgsValue:
+            extraArgs = [x.strip() for x in extraArgsValue.split(' ') 
+                if len(x.strip()) > 0]
+            
+            if len(extraArgs) > 0:
+                strTextList += extraArgs
         
         return strTextList
 
@@ -377,7 +395,7 @@ class MainWindow(wx.Frame):
         if not os.path.isfile(strFilename):
             return 
 
-        print "Loading up %s" % (strFilename)
+        # print "Loading up %s" % (strFilename)
         self.et = ElementTree.parse(strFilename)
         
     def saveInfo(self):
@@ -385,7 +403,9 @@ class MainWindow(wx.Frame):
         if strFilename == None:
             return
         
+        # print "Saving to arguments to: %s" % ( strFilename)
         if self.et:
+            """ There is no elementree the first time """
             self.updateElementTree()
             self.et.write(strFilename, encoding="iso-8859-1")
             return
@@ -405,11 +425,19 @@ class MainWindow(wx.Frame):
             
             of.write('  </option>\n')
 
+        of.write('  <extra lastval="%s">\n' % (str(self.ctrlExtraArgs.GetValue())))
+        of.write('  </extra>\n')
+
         of.write('</wxOptParse>\n')
         
         of.close()
 
     def updateElementTree(self):
+        """ Go through the elementtree and make sure that everything matches 
+        the controls.
+        
+        The element must already be in the elementtree
+        """
         for ctrl, option in self.ctrlOptions:
             strName = option.dest
             if option.action == 'store_true' or option.action == 'store_false':
@@ -424,7 +452,8 @@ class MainWindow(wx.Frame):
                 strLastVal = str(ctrl.GetValue())
             
             self.updateElement(strName, strLastVal)
-    
+        self.updateExtraArg()
+        
     def updateElement(self, strName, strLastVal):
         for item in self.et.findall('//option'):
             if item.attrib['name'] == strName:
@@ -436,6 +465,18 @@ class MainWindow(wx.Frame):
                 self.AppendRecent(item, strLastVal, previous)
                 break
 
+    def updateExtraArg(self):
+        """ Update the "extra" arg which is handled a little differently
+        """
+        item = self.et.find('//extra')
+        if item != None:
+            previous = item.attrib['lastval'][:]
+            value = self.ctrlExtraArgs.GetValue()
+            if value == None:
+                value = 'None'
+            item.attrib['lastval'] = value
+            self.AppendRecent(item, item.attrib['lastval'], previous)
+            
     def AppendRecent(self, node, curVal, lastVal):
         if str(curVal) == str(lastVal):
             return
@@ -453,23 +494,13 @@ class MainWindow(wx.Frame):
         node.insert(0, newNode)
 
     def getXmlFilename(self):
-        strFilename = self.progname
-        strFilename = re.sub(r'\..{1,4}$', '.args', strFilename)
-        # "new/orig" diff line
-        #strFilename = '.' + strFilename # prepend a dot to hide in Unix
-        ## NEW START
-        strBaseFilename = os.path.dirname(strFilename)
-        strDirname = os.path.basename(strFilename)
-        strBaseFilename = '.' + strBaseFilename # prepend a dot to hide in Unix
-        strFilename = os.path.join(strFilename)
-        strFilename = os.path.normpath(strFilename)
-        ## NEW END
-        
+        strFilename = _WxOptParseGetXmlFromFilename(self.progname)
         if strFilename == self.progname:
-            # Don't overwrite the program
+            # Whatever we do, don't overwrite the program
             return None
-        return strFilename
 
+        return strFilename
+        
     def OnClose(self, event):
         self.Destroy()
         sys.exit(-1)
@@ -490,9 +521,10 @@ class IterOptions:
         return self
         
     def next(self):
-        if len(self.list) > self.nIndex:
+        if self.nIndex < len(self.list):
             self.nIndex += 1
-            return MyOption(self.list[self.nIndex - 1], self.parent.et)
+            return MyOption(self.list[self.nIndex - 1], self.parent.et, 
+                self.parent.parsed_options)
         raise StopIteration
 
 class MyOption:
@@ -502,9 +534,9 @@ class MyOption:
     we have a consistent set of rules about what type of object we are 
     looking at, for example .
     """
-    
-    def __init__(self, listItem, et):
+    def __init__(self, listItem, et, parsed_options):
         self.et = et
+        self.parsed_options = parsed_options
         if isinstance(listItem, tuple):
             self.ctrl, self.option = listItem
         else:
@@ -576,6 +608,11 @@ class MyOption:
     def getDefault(self):
         strDefault = self.option.default
         
+        if hasattr(self.parsed_options, self.option.dest):
+            strDefault = getattr(self.parsed_options, self.option.dest)
+            if strDefault != None:
+                return strDefault
+        
         if self.findLastVal(self.option.dest) != None:
             strDefault = self.findLastVal(self.option.dest)
         
@@ -606,6 +643,17 @@ class MyOption:
     def __str__(self):
         return "%s:%s" % (self.getName(), self.getDefault())
 
+def _WxOptParseGetXmlFromFilename(strFilename):
+    strFilename = re.sub(r'\..{1,4}$', '.args', strFilename)
+    strDirName = os.path.dirname(strFilename)
+    strBaseName = os.path.basename(strFilename)
+    # Add the dot to hide in in Linux
+    strFilename = os.path.join(strDirName, '.' + strBaseName)
+    strFilename = os.path.normpath(strFilename)
+    
+    return strFilename
+
+
 g_orginalOptionParser = optparse.OptionParser
 optparse.OptionParser = wxOptParser
 OptionParser = wxOptParser
@@ -631,9 +679,11 @@ def handleCommandLine():
     sys.argv[0] = os.path.basename(strFilename) # Let's cheat
     if sys.argv[0] == strFilename and len(strDir) > 0:
         sys.argv[0] = sys.argv[0][len(strDir):]
+    
     strModuleName = sys.argv[0][:]
     if strModuleName.endswith('.py'):
         strModuleName = strModuleName[:-3]
+    
     module = __import__(strModuleName)
     module.__dict__.update(globals())
     execfile(strFilename, module.__dict__)

@@ -92,7 +92,10 @@ class testWxOptParse(unittest.TestCase):
                 self.fail("Didn't find the key %s in the XML" % (key))
         
     def createXml(self, strFilename, info, previous = None):
-        """ Create an XML file using a dictionary """
+        """ Create an XML file using a dictionary 
+        
+        Note: need to update for "extra" and write tests!
+        """
         
         fo = file(strFilename, "w")
         fo.write("<?xml version='1.0' encoding='iso-8859-1'?>\n")
@@ -123,90 +126,95 @@ class testWxOptParse(unittest.TestCase):
         """ This test erases the XML and creates a new one by clicking "go" """
         
         strFilename = "mytest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        
         sys.argv[0] = strFilename # Let's cheat
-        try:
-            os.unlink("mytest.args") # Erase
-        except:
-            pass
+        self._safeErase(args_fname) # Erase
         
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "mytest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         self.frame.OnGo(None)
         self.verifyValues(old)
 
     def testLoadLastValues(self):
-        """ This test creates the XML and verifies that it loads the last values """
+        """ This test creates the XML and verifies that it loads the last values 
         
-        self.createXml("mytest.args", new, prev1)
+        """
+        
         strFilename = "mytest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        
+        self.createXml(args_fname, new, prev1)
         sys.argv[0] = strFilename # Let's cheat
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "mytest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         self.frame.OnGo(None)
         self.verifyValues(new)
+        self._safeErase(args_fname)
 
     def testCreateXmlNoDefaults(self):
-        """ This test erases the XML and creates a new one by clicking "go" with no defaults """
+        """ This test erases the XML and creates a new one by clicking "go" with no defaults 
+        
+        """
         
         strFilename = "noDefaultsTest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        
         sys.argv[0] = strFilename # Let's cheat
-        try:
-            os.unlink("noDefaultsTest.args") # Erase
-        except:
-            pass
+        self._safeErase(args_fname)
         
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "noDefaultsTest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         self.frame.OnGo(None)
         self.verifyValues(noDefaults)
+        self._safeErase(args_fname)
 
     def testLoadPreviousNoDefaults(self):
         """ This test creates the XML and verifies that it loads the previous values 
         
         Currenty this test fails.
         """
-        
-        self.createXml("noDefaultsTest.args", new)
         strFilename = "noDefaultsTest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        self.createXml(args_fname, new)
         sys.argv[0] = strFilename # Let's cheat
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "noDefaultsTest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         self.frame.OnGo(None)
         
         self.verifyValues(new)
+        self._safeErase(args_fname)
 
     def testChangeFromDefaults(self):
         """ This test erases the XML and changes all the values away from the defaults """
         
         strFilename = "mytest.py"
+        args_fname = self._getXmlFilename(strFilename)
         sys.argv[0] = strFilename 
-        try:
-            os.unlink("mytest.args") # Erase
-        except:
-            pass
+        self._safeErase(args_fname) # Erase
         
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "mytest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         for ctrl, option in self.frame.ctrlOptions:
             if option.dest in new:
                 ctrl.SetValue(new[option.dest])
@@ -215,19 +223,21 @@ class testWxOptParse(unittest.TestCase):
             
         self.frame.OnGo(None)
         self.verifyValues(new)
+        self._safeErase(args_fname)
 
     def testChangeFromPrevious(self):
         """ This test creates the XML and verifies that it loads the previous values """
         
-        self.createXml("mytest.args", new)
         strFilename = "mytest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        self.createXml(args_fname, new)
         sys.argv[0] = strFilename # Let's cheat
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "mytest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         
         for ctrl, option in self.frame.ctrlOptions:
             if option.dest in new:
@@ -238,19 +248,21 @@ class testWxOptParse(unittest.TestCase):
         self.frame.OnGo(None)
         
         self.verifyValues(old)
+        self._safeErase(args_fname)
 
     def testLoadLastValues(self):
         """ This test creates the XML and verifies that it loads the last values """
         
-        self.createXml("mytest.args", new, prev2)
         strFilename = "mytest.py"
+        args_fname = self._getXmlFilename(strFilename)
+        self.createXml(args_fname, new, prev2)
         sys.argv[0] = strFilename # Let's cheat
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
             '_wxOptParseCallback' : self.grabParent
              })
         
-        self.assertEqual(self.frame.getXmlFilename(), "mytest.args")
+        self.assertEqual(self.frame.getXmlFilename(), args_fname)
         for ctrl, option in self.frame.ctrlOptions:
             if option.dest in old:
                 ctrl.SetValue(old[option.dest])
@@ -258,11 +270,13 @@ class testWxOptParse(unittest.TestCase):
                 fail("Missing %s in new" % (option.name))
         self.frame.OnGo(None)
         self.verifyValues(old)
+        self._safeErase(args_fname)
 
     def testGrep(self):
         """ This test creates the XML and verifies that it loads the last values """
-        
+
         strFilename = "grepTest.py"
+        args_fname = self._getXmlFilename(strFilename)
         sys.argv[0] = strFilename # Let's cheat
         myNotebook = execfile(strFilename, { 
             '__name__' : "__main__",
@@ -270,7 +284,17 @@ class testWxOptParse(unittest.TestCase):
              })
         
         self.frame.OnGo(None)
+        self._safeErase(args_fname)
 
+    def _getXmlFilename(self, progname):
+        return wxoptparse._WxOptParseGetXmlFromFilename(progname)
+        
+    def _safeErase(self, fname):
+        try:
+            os.unlink(fname) # Erase
+        except:
+            pass
 
+        
 if __name__ == '__main__':
     unittest.main()
